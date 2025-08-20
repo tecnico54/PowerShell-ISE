@@ -1,0 +1,4 @@
+Ejecuta PowerShell como administrador y pon los siguientes comando: 
+
+1. Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+2. Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
