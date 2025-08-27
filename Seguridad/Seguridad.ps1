@@ -55,7 +55,7 @@ while($true){
             powercfg /setactive $highPlan
             $currentPlan = $highPlan
             if(-not $alreadySpokeHigh){
-                $mensaje = "CPU en $cpuUsage, Cambiando a alto rendimiento."
+                $mensaje = "CPU en $cpuUsage%, Cambiando a alto rendimiento."
                 $synth.Speak($mensaje)
                 $alreadySpokeHigh = $true
                 $alreadySpokeLow  = $false
@@ -69,7 +69,7 @@ while($true){
             powercfg /setactive $balancedPlan
             $currentPlan = $balancedPlan
             if(-not $alreadySpokeLow){
-                $mensaje = "CPU en $cpuUsage, Cambiando a modo equilibrado."
+                $mensaje = "CPU en $cpuUsage%, Cambiando a modo equilibrado."
                 $synth.Speak($mensaje)
                 $alreadySpokeLow  = $true
                 $alreadySpokeHigh = $false
