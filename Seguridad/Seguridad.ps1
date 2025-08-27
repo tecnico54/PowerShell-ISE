@@ -23,7 +23,7 @@ public class User32{
     [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
     [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
     [StructLayout(LayoutKind.Sequential)]
-    public struct RECT {
+    public struct RECT{
         public int Left;
         public int Top;
         public int Right;
@@ -31,15 +31,15 @@ public class User32{
     }
 }
 "@
-function Is-Fullscreen {
-    # Obtener ventana activa
+function Is-Fullscreen{
+    #Obtener ventana activa:
     $hWnd = [User32]::GetForegroundWindow()
     if($hWnd -eq [IntPtr]::Zero) { return $false }
-    #Medir tamaño de la ventana activa
+    #Medir tamaño de la ventana activa:
     $rect = New-Object User32+RECT
     [User32]::GetWindowRect($hWnd, [ref]$rect) | Out-Null
     $screen = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
-    #Comprobar si coincide con la resolución de pantalla (pantalla completa)
+    #Comprobar si coincide con la resolución de pantalla (pantalla completa):
     return ($rect.Left -eq 0 -and $rect.Top -eq 0 -and 
             $rect.Right -eq $screen.Width -and 
             $rect.Bottom -eq $screen.Height)
