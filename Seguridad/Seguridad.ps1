@@ -3,7 +3,7 @@ $balancedPlan = "381b4222-f694-41f0-9685-ff5bb260df2e"  #Equilibrado
 $cpuHighThreshold = 60  #>=60% cambiar a alto rendimiento
 $cpuLowThreshold  = 40  #<=40% cambiar a equilibrado
 $highDuration = 10  #Segundos seguidos con CPU alta
-$lowDuration = 20  #Segundos seguidos con CPU baja
+$lowDuration  = 20  #Segundos seguidos con CPU baja
 $currentPlan = (powercfg /getactivescheme).Split(' ')[3]
 $highCounter = 0
 $lowCounter  = 0
@@ -32,14 +32,11 @@ public class User32{
 }
 "@
 function Is-Fullscreen{
-    #Obtener ventana activa:
     $hWnd = [User32]::GetForegroundWindow()
     if($hWnd -eq [IntPtr]::Zero) { return $false }
-    #Medir tamaño de la ventana activa:
     $rect = New-Object User32+RECT
     [User32]::GetWindowRect($hWnd, [ref]$rect) | Out-Null
     $screen = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
-    #Comprobar si coincide con la resolución de pantalla (pantalla completa):
     return ($rect.Left -eq 0 -and $rect.Top -eq 0 -and 
             $rect.Right -eq $screen.Width -and 
             $rect.Bottom -eq $screen.Height)
@@ -47,14 +44,15 @@ function Is-Fullscreen{
 #Bucle de monitoreo:
 while($true){
     $cpuUsage = (Get-WmiObject -Class Win32_Processor |
-                 Measure-Object -Property LoadPercentage -Average).Average
+                 Measure-Object -Property LoadPercentage -Average).Average   
+    $fullscreen = Is-Fullscreen
     if($cpuUsage -ge $cpuHighThreshold){
         $highCounter += 5
         $lowCounter = 0
         if($highCounter -ge $highDuration -and $currentPlan -ne $highPlan){
             powercfg /setactive $highPlan
             $currentPlan = $highPlan
-            if(-not $alreadySpokeHigh){
+            if(-not $alreadySpokeHigh -and -not $fullscreen){
                 $mensaje = "CPU en $cpuUsage%, Cambiando a alto rendimiento."
                 $synth.Speak($mensaje)
                 $alreadySpokeHigh = $true
@@ -68,7 +66,7 @@ while($true){
         if($lowCounter -ge $lowDuration -and $currentPlan -ne $balancedPlan){
             powercfg /setactive $balancedPlan
             $currentPlan = $balancedPlan
-            if(-not $alreadySpokeLow){
+            if(-not $alreadySpokeLow -and -not $fullscreen){
                 $mensaje = "CPU en $cpuUsage%, Cambiando a modo equilibrado."
                 $synth.Speak($mensaje)
                 $alreadySpokeLow  = $true
